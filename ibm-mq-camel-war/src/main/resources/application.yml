@@ -1,0 +1,15 @@
+ibm.mq:
+  queueManager: QM1
+  connName: localhost(1414)
+  channel: DEV.ADMIN.SVRCONN
+  #channel: DEV.APP.SVRCONN
+  username: admin
+  password: passw0rd
+
+#https://stackoverflow:com/questions/30291067/jmslistener-usage-for-publish-subscribe-topic:
+spring.jms.pub-sub-domain: true
+
+json.file.path: ${user.dir}//ibm-mq-camel-war//src//main//resources//json//
+xml.file.path: ${user.dir}//ibm-mq-camel-war//src//main//resources//xml//
+
+com.ibm.mq.jms.SupportMQExtensions: true

@@ -1,0 +1,84 @@
+docker run \
+  --name ibmcom-mq \
+  --env LICENSE=accept \
+  --env MQ_QMGR_NAME=QM1 \
+  --publish 1414:1414 \
+  --publish 9443:9443 \
+  --detach \
+  --volume "C:/Users/Muhammad Arslan/Downloads/multi-module/ibm-mq/qm1data/mqm-log:/mnt/mqm/mqm-log" \
+  ibmcom/mq
+  
+username: admin
+password: passw0rd
+  
+winpty docker exec -it ibmcom-mq bin/bash
+cd  /opt/mqm/java/lib/
+docker cp <containerId>:/file/path/within/container /host/path/target
+
+dspmq
+
+https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_7.5.0/com.ibm.mq.ref.adm.doc/q085130_.htm
+runmqsc QM1
+DISPLAY CHANNEL(*)
+DISPLAY CHANNEL(DEV.ADMIN.SVRCONN)
+DISPLAY CHANNEL(DEV.APP.SVRCONN)
+SET CHLAUTH('DEV.APP.SVRCONN') TYPE(BLOCKUSER) USERLIST(ALLOWANY)
+
+#https://stackoverflow.com/questions/26827487/detailedjmssecurityexception-while-trying-to-access-queue-in-ibm-mq
+DISPLAY CHLAUTH(DEV.ADMIN.SVRCONN)
+ALTER QMGR CHLAUTH(DISABLED)
+ALTER QMGR CHLAUTH(ENABLED)
+
+SET CHLAUTH(DEV.ADMIN.SVRCONN) TYPE(ADDRESSMAP) ADDRESS(localhost) USERSRC(CHANNEL)
+
+
+docker cp ibmcom-mq:/opt/mqm/java/lib/com.ibm.mq.pcf.jar C:\Users\Muhammad Arslan\Downloads\ibm-mq-sample\lib\
+
+cd C:\Users\Muhammad Arslan\Downloads\ibm-mq-sample\lib\
+docker cp ibmcom-mq:/opt/mqm/java/lib/com.ibm.mq.pcf.jar .
+docker cp ibmcom-mq:/opt/mqm/java/lib/com.ibm.mq.allclient.jar .
+
+mvn install:install-file \
+  -Dfile=com.ibm.mq.allclient-9.1.2.0.jar \
+  -DgroupId=com.ibm \
+  -DartifactId=com.ibm.mq.allclient \
+  -Dversion=9.1.2.0 \
+  -Dpackaging=jar
+
+mvn install:install-file \
+  -Dfile=com.ibm.mq.pcf-9.1.2.0.jar \
+  -DgroupId=com.ibm \
+  -DartifactId=com.ibm.mq.pcf \
+  -Dversion=9.1.2.0 \
+  -Dpackaging=jar
+  
+mvn install:install-file \
+  -Dfile=com.ibm.mq.allclient-8.0.0.5.jar \
+  -DgroupId=com.ibm \
+  -DartifactId=com.ibm.mq.allclient \
+  -Dversion=8.0.0.5 \
+  -Dpackaging=jar
+
+mvn install:install-file \
+  -Dfile=com.ibm.mq.pcf-8.0.0.5.jar \
+  -DgroupId=com.ibm \
+  -DartifactId=com.ibm.mq.pcf \
+  -Dversion=8.0.0.5 \
+  -Dpackaging=jar
+
+mvn install:install-file \
+  -Dfile=spring-cloud-stream-binder-jms-ibm-mq-1.0.0.BUILD-SNAPSHOT-9.1.2.0.jar \
+  -DgroupId=org.springframework.cloud \
+  -DartifactId=spring-cloud-stream-binder-jms-ibm-mq \
+  -Dversion=1.0.0.BUILD-SNAPSHOT \
+  -Dpackaging=jar
+  
+mvn install:install-file \
+  -Dfile=spring-cloud-stream-binder-jms-ibm-mq-1.0.0.BUILD-SNAPSHOT-8.0.0.5.jar \
+  -DgroupId=org.springframework.cloud \
+  -DartifactId=spring-cloud-stream-binder-jms-ibm-mq \
+  -Dversion=1.0.0.BUILD-SNAPSHOT \
+  -Dpackaging=jar
+  
+mvn -P ibmmq clean package -DskipTests
+mvn -P ibmmq clean package -Dmaven.test.skip=true
