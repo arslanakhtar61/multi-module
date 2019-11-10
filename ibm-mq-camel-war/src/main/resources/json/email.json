@@ -1,4 +1,5 @@
 {
+  "requestAction": "email",
   "email": {
     "to": "arslan@connect.hku.hk",
     "body": "This is a message from publisher1"

@@ -1,0 +1,7 @@
+{
+  "requestAction": "animal",
+  "animal": {
+    "specie": "cat",
+    "category": "lion"
+  }
+}

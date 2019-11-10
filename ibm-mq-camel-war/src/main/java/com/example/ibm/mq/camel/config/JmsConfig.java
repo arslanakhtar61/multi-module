@@ -17,7 +17,7 @@ public class JmsConfig {
         return jmsTransactionManager;
     }
 
-    @Bean
+    @Bean("jms-fun")
     public JmsComponent jmsComponent(final ConnectionFactory connectionFactory, final JmsTransactionManager jmsTransactionManager) {
         JmsComponent jmsComponent = JmsComponent.jmsComponentTransacted(connectionFactory, jmsTransactionManager);
         jmsComponent.setSubscriptionDurable(true);

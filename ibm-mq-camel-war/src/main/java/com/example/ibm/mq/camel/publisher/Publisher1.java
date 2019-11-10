@@ -3,7 +3,7 @@ package com.example.ibm.mq.camel.publisher;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class Publisher1 extends SpringRouteBuilder {
 
     @Override
@@ -19,8 +19,8 @@ public class Publisher1 extends SpringRouteBuilder {
             .process(exchange -> {
                 //System.out.println(exchange.getIn().getBody());
             })
-            .log("${body}")
-            .to("jms:topic:dev/mailbox")
+            //.log("${body}")
+            .to("jms-fun:topic:dev/mailbox")
     .end();
 
     from("file:{{xml.file.path}}?noop=true&idempotent=false&scheduler=spring&scheduler.cron=0/5+*+*+*+*+?")
@@ -37,7 +37,7 @@ public class Publisher1 extends SpringRouteBuilder {
             //System.out.println(exchange.getIn().getBody());
         })
         //.log("${body}")
-        .to("jms:topic:dev/mailbox2")
+        .to("jms-fun:topic:dev/mailbox2")
     .end();
 
     }

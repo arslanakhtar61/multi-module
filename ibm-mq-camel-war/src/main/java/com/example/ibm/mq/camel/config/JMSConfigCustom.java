@@ -4,6 +4,7 @@ import com.ibm.mq.jms.MQConnectionFactory;
 import com.ibm.msg.client.wmq.common.CommonConstants;
 import org.apache.camel.component.jms.JmsComponent;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,11 +21,33 @@ import org.springframework.jms.support.converter.MessageType;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.Session;
 
 @Configuration
 @EnableJms
 @EnableScheduling
 public class JMSConfigCustom {
+
+    @Value("${jmsCommponent.ibm.mq.queueManager:null}")
+    private String queueManager;
+
+    @Value("${jmsCommponent.ibm.mq.hostName:null}")
+    private String hostName;
+
+    @Value("${jmsCommponent.ibm.mq.port:null}")
+    private int port;
+
+    @Value("${jmsCommponent.ibm.mq.channel:null}")
+    private String channel;
+
+    @Value("${jmsCommponent.ibm.mq.username:null}")
+    private String username;
+
+    @Value("${jmsCommponent.ibm.mq.password:null}")
+    private String password;
+
+    @Value("${spring.application.name:null}")
+    private String appName;
 
     @Bean
     @DependsOn(value = { "mqConnectionFactory-fun" })
@@ -39,12 +62,14 @@ public class JMSConfigCustom {
     public MQConnectionFactory mqConnectionFactory() {
         MQConnectionFactory mqConnectionFactory = new MQConnectionFactory();
         try{
-            mqConnectionFactory.setQueueManager("QM1");
-            mqConnectionFactory.setHostName("localhost");
-            mqConnectionFactory.setPort(1414);
-            mqConnectionFactory.setChannel("DEV.APP.SVRCONN");
+            mqConnectionFactory.setQueueManager(queueManager);
+            mqConnectionFactory.setHostName(hostName);
+            mqConnectionFactory.setPort(port);
+            mqConnectionFactory.setChannel(channel);
             //mqConnectionFactory.setIntProperty(CommonConstants.WMQ_CONNECTION_MODE, CommonConstants.WMQ_CM_CLIENT); //https://stackoverflow.com/a/27813520/6434650
             mqConnectionFactory.setTransportType(CommonConstants.WMQ_CM_CLIENT);
+
+            //mqConnectionFactory.setClientID(appName);
         }catch (Exception e){
 
         }
@@ -57,20 +82,24 @@ public class JMSConfigCustom {
     public UserCredentialsConnectionFactoryAdapter getUserCredentialsConnectionFactoryAdapter(
             @Qualifier("mqConnectionFactory-fun") final MQConnectionFactory mqConnectionFactory) {
         UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter = new UserCredentialsConnectionFactoryAdapter();
-        userCredentialsConnectionFactoryAdapter.setUsername("admin");
-        userCredentialsConnectionFactoryAdapter.setPassword("passw0rd");
+        userCredentialsConnectionFactoryAdapter.setUsername(username);
+        userCredentialsConnectionFactoryAdapter.setPassword(password);
         userCredentialsConnectionFactoryAdapter.setTargetConnectionFactory(mqConnectionFactory);
         return userCredentialsConnectionFactoryAdapter;
     }
 
-    @Bean//("jms")
+    @Bean("jms-fun")
+    @DependsOn(value = { "userCredentialsConnectionFactoryAdapter-fun" })
     public JmsComponent jmsComponent(@Qualifier("userCredentialsConnectionFactoryAdapter-fun") final UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter, final JmsTransactionManager jmsTransactionManager) {
         JmsComponent jmsComponent = JmsComponent.jmsComponentTransacted(userCredentialsConnectionFactoryAdapter, jmsTransactionManager);
-        jmsComponent.setSubscriptionDurable(true);
+        //jmsComponent.setSubscriptionDurable(true);
+        jmsComponent.setAcknowledgementMode(Session.AUTO_ACKNOWLEDGE);
+        //jmsComponent.setClientId(appName);
         return jmsComponent;
     }
 
     @Bean
+    @DependsOn(value = { "userCredentialsConnectionFactoryAdapter-fun" })
     public JmsListenerContainerFactory<?> jmsListenerContainerFactory(@Qualifier("userCredentialsConnectionFactoryAdapter-fun") final UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter,
                                                                       DefaultJmsListenerContainerFactoryConfigurer configurer) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
