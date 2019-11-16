@@ -1,6 +1,7 @@
 package com.example.ibm.mq.camel.config;
 
 import com.ibm.mq.jms.MQConnectionFactory;
+import com.ibm.msg.client.wmq.WMQConstants;
 import com.ibm.msg.client.wmq.common.CommonConstants;
 import org.apache.camel.component.jms.JmsComponent;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,6 +50,9 @@ public class JMSConfigCustom {
     @Value("${spring.application.name:null}")
     private String appName;
 
+    @Value("${spring.application.transportType:null}")
+    private String transportType;
+
     @Bean
     @DependsOn(value = { "mqConnectionFactory-fun" })
     public JmsTransactionManager jmsTransactionManager(@Qualifier("mqConnectionFactory-fun") final MQConnectionFactory mqConnectionFactory) {
@@ -67,7 +71,8 @@ public class JMSConfigCustom {
             mqConnectionFactory.setPort(port);
             mqConnectionFactory.setChannel(channel);
             //mqConnectionFactory.setIntProperty(CommonConstants.WMQ_CONNECTION_MODE, CommonConstants.WMQ_CM_CLIENT); //https://stackoverflow.com/a/27813520/6434650
-            mqConnectionFactory.setTransportType(CommonConstants.WMQ_CM_CLIENT);
+            //mqConnectionFactory.setTransportType(CommonConstants.WMQ_CM_CLIENT);
+            mqConnectionFactory.setTransportType("BINDINGS".equalsIgnoreCase(transportType) ? WMQConstants.WMQ_CM_BINDINGS : WMQConstants.WMQ_CM_CLIENT);
 
             //mqConnectionFactory.setClientID(appName);
         }catch (Exception e){

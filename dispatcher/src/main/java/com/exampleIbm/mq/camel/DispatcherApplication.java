@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.example.ibm.mq.camel"})
+@ComponentScan(basePackages = {"com.exampleIbm.mq.camel", "com.example.ibm.mq.camel"})
 public class DispatcherApplication extends SpringBootServletInitializer {
 
 	private static final Logger log = LogManager.getLogger(DispatcherApplication.class);

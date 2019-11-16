@@ -20,14 +20,16 @@ jmsCommponent:
     password: passw0rd
     #Transport Type = BINDINGS or CLIENT
     transportType: CLIENT
+    timeout: 10000
+    queue: DEV.QUEUE.2
 
 #https://stackoverflow:com/questions/30291067/jmslistener-usage-for-publish-subscribe-topic:
-spring.jms.pub-sub-domain: true
+#spring.jms.pub-sub-domain: true
 
 json.file.path: ${user.dir}//ibm-mq-camel-war//src//main//resources//json//
 xml.file.path: ${user.dir}//ibm-mq-camel-war//src//main//resources//xml//
 
-com.ibm.mq.jms.SupportMQExtensions: true
+#com.ibm.mq.jms.SupportMQExtensions: true
 
 spring:
   application:
